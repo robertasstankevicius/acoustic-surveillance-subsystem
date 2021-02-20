@@ -1,0 +1,2 @@
+# acoustic-surveillance-subsystem
+The acoustic alarm subsystem would perform the auxiliary tracking function of the monitored (threat) object. If the subject occupies a small area in the camera image, it is difficult to identify  the subject  by motion detection algorithms, However, they could be assisted by an acoustic subsystem that "hears" certain types of sounds, determines their propagation direction, and rotates the surveillance camera in that direction.
