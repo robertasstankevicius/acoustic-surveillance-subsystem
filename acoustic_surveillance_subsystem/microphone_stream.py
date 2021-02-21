@@ -13,7 +13,6 @@ class MicrophoneStream:
     def record(
             self,
             chunk_length: float,
-            total: float,
             channels: Optional[int] = None,
             sample_rate: Optional[int] = None
     ):
@@ -35,7 +34,7 @@ class MicrophoneStream:
 
         elapsed = 0.0
 
-        while elapsed < total:
+        while self.__on:
             yield stream.read(chunk)
             elapsed += chunk_length
 

@@ -1,4 +1,5 @@
 import threading
+import time
 from typing import List
 
 import pyaudio
@@ -27,6 +28,9 @@ x3 = threading.Thread(target=lambda: [print(m3.index) for data in m3.record(0.1,
 x1.start()
 x2.start()
 x3.start()
+
+time.sleep(2)
+m1.stop(), m2.stop(), m3.stop()
 
 x1.join()
 x2.join()
