@@ -21,7 +21,9 @@ class Recorder:
         elif device.time_per_chunk != self.__time_per_chunk:
             raise Exception('All devices must record the same span of time per chunk.')
 
-    def record(self) -> Generator[Dict[str, str], None, None]:
+    def record(self, duration: Optional[float] = None) -> Generator[Dict[str, bytes], None, None]:
+        time_elapsed = 0.0
+
         iterators: Dict[str, Iterable] = {}
         for device_name, device in self.__input_devices.items():
             iterators[device_name] = iter(device.record())
@@ -29,9 +31,11 @@ class Recorder:
         while True:
             yield {device_name: next(iterator) for device_name, iterator in iterators.items()}
 
-    def record_to_files(self, duration: Optional[float]) -> Generator[Dict[str, str], None, None]:
-        time_elapsed = 0.0
+            time_elapsed += self.__time_per_chunk
+            if duration and duration <= time_elapsed:
+                break
 
+    def record_to_files(self, duration: Optional[float]) -> Generator[Dict[str, bytes], None, None]:
         files = {}
 
         for device_name, device in self.__input_devices.items():
@@ -42,16 +46,11 @@ class Recorder:
 
             files[device_name] = file
 
-        for batches in self.record():
+        for batches in self.record(duration):
             for name, batch in batches.items():
                 files[name].writeframes(batch)
 
             yield batches
-
-            time_elapsed += self.__time_per_chunk
-            print(time_elapsed)
-            if duration and duration <= time_elapsed:
-                break
 
         for file in files.values():
             file.close()
