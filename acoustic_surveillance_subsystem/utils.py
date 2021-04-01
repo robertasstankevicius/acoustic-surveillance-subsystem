@@ -1,3 +1,4 @@
+import socket
 from typing import Tuple
 
 import numpy as np
@@ -37,3 +38,10 @@ def calculate_degrees_between_angle(norm_1, norm_2, angle):
         return angle - x
     else:
         return x
+
+
+def send_packet_and_close(ip: str, port: int, packet: bytes) -> None:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
+    s.connect((ip, port))
+    s.send(packet)
+    s.close()
