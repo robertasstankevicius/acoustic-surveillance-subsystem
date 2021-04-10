@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 
-class AudioDevice:
+class PyAudioDevice:
     """
     An interface for PyAudio Device for easier parameter management.
     """

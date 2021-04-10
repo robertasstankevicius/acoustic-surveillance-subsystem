@@ -2,10 +2,10 @@ from typing import Optional, Generator, Dict, Any
 
 import pyaudio
 
-from acoustic_surveillance_subsystem.device.audio_device import AudioDevice
+from acoustic_surveillance_subsystem.device.pyaudio_device import PyAudioDevice
 
 
-class InputDevice(AudioDevice):
+class InputDevice(PyAudioDevice):
     def __init__(
             self,
             device: Dict[str, Any],

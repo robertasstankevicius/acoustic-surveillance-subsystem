@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, Type
 
+from acoustic_surveillance_subsystem.processing.processing_base import ProcessingBase
 from acoustic_surveillance_subsystem.signal import Signal
 from acoustic_surveillance_subsystem.utils import normalize_sequence, calculate_degrees_between_angle
 
@@ -15,7 +16,7 @@ class PlaneAudioDirection:
         self.__angle2 = angle2
         self.__angle3 = angle3
 
-    def measure_angle_rms(self, signal1: Signal, signal2: Signal, signal3: Signal) -> Optional[float]:
+    def measure_angle(self, signal1: Signal, signal2: Signal, signal3: Signal, processor: Type[ProcessingBase]) -> Optional[float]:
         """
         Calculates at which angle the audio is coming from using Power of a Signal method which relies on measuring
         root mean square of each signal.
@@ -23,11 +24,12 @@ class PlaneAudioDirection:
         :param signal1: Signal wave.
         :param signal2: Signal wave.
         :param signal3: Signal wave.
+        :param processor: Audio processing class to use when processing audio signals.
 
         :return: Angle at which the audio came from if it can be measured, otherwise return None.
         """
 
-        normalized1, normalized2, normalized3 = normalize_sequence((signal1.root_mean_square(), signal2.root_mean_square(), signal3.root_mean_square()))
+        normalized1, normalized2, normalized3 = normalize_sequence((processor(signal1).measure(), processor(signal2).measure(), processor(signal3).measure()))
 
         if normalized1 == 0:
             available_angle = self.__angle3 - self.__angle2
