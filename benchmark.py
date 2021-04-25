@@ -34,16 +34,18 @@ recorder.add_device('3', m3)
 
 import time
 
-pad = PlaneAudioDirection(0, 120, 240)
+power_of_a_signal_in_plane = PlaneAudioDirection(0, 120, 240, PowerOfASignal)
+dynamic_range_in_plane = PlaneAudioDirection(0, 120, 240, DynamicRange)
+fast_fourier_transform_in_plane = PlaneAudioDirection(0, 120, 240, FastFourierTransform)
 
 start_time = time.time()
 for a in recorder.record():
     signals = (Signal.from_bytes(a['2']), Signal.from_bytes(a['3']), Signal.from_bytes(a['1']))
     signal1, signal2, signal3 = signals
 
-    poas = pad.measure_angle(signal1, signal2, signal3, PowerOfASignal)
-    dr = pad.measure_angle(signal1, signal2, signal3, DynamicRange)
-    fft = pad.measure_angle(signal1, signal2, signal3, FastFourierTransform)
+    poas = power_of_a_signal_in_plane.measure_angle(signal1, signal2, signal3)
+    dr = dynamic_range_in_plane.measure_angle(signal1, signal2, signal3)
+    fft = fast_fourier_transform_in_plane.measure_angle(signal1, signal2, signal3)
 
     print(poas, dr, fft)
 

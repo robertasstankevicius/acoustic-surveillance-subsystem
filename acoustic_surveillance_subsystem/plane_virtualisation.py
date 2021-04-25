@@ -11,12 +11,20 @@ class PlaneAudioDirection:
     that the audio is coming from in a plane.
     """
 
-    def __init__(self, angle1: float, angle2: float, angle3: float):
+    def __init__(self, angle1: float, angle2: float, angle3: float, processor: Type[ProcessingBase]):
+        """
+
+        :param angle1: Angle at which the first microphone is pointed.
+        :param angle2: Angle at which the second microphone is pointed.
+        :param angle3: Angle at which the third microphone is pointed.
+        :param processor: Audio processing class to use when processing audio signals.
+        """
         self.__angle1 = angle1
         self.__angle2 = angle2
         self.__angle3 = angle3
+        self.__processor = processor
 
-    def measure_angle(self, signal1: Signal, signal2: Signal, signal3: Signal, processor: Type[ProcessingBase]) -> Optional[float]:
+    def measure_angle(self, signal1: Signal, signal2: Signal, signal3: Signal) -> Optional[float]:
         """
         Calculates at which angle the audio is coming from using Power of a Signal method which relies on measuring
         root mean square of each signal.
@@ -24,12 +32,17 @@ class PlaneAudioDirection:
         :param signal1: Signal wave.
         :param signal2: Signal wave.
         :param signal3: Signal wave.
-        :param processor: Audio processing class to use when processing audio signals.
 
         :return: Angle at which the audio came from if it can be measured, otherwise return None.
         """
 
-        normalized1, normalized2, normalized3 = normalize_sequence((processor(signal1).measure(), processor(signal2).measure(), processor(signal3).measure()))
+        normalized1, normalized2, normalized3 = normalize_sequence(
+            (
+                self.__processor(signal1).measure(),
+                self.__processor(signal2).measure(),
+                self.__processor(signal3).measure()
+            )
+        )
 
         if normalized1 == 0:
             available_angle = self.__angle3 - self.__angle2

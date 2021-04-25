@@ -1,0 +1,24 @@
+Sending the following packets gives your basic controls
+
+/ Right
+cc dd ee ff 77 4f 00 00 e3 12 69 00 48 00 00 00 00 00 00 00 af 93 c6 3b 09 f7 4b 01 01 00 00 00 00 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                                                                                                                        ^^
+                                                                                                           I think that 05 means 5 degrees, ff would be 255, and I think this is the max.
+                                                                                                           5a = 90
+                                                                                                           b4 = 180
+
+/ Left
+cc dd ee ff 77 4f 00 00 e3 12 69 00 48 00 00 00 00 00 00 00 af 93 c6 3b 09 f7 4b 01 01 00 00 00 00 00 00 00 00 00 00 00 fb ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                                                                                                                        ^^
+                                                                                                           I think that fb means -5 degrees, 00 would be -255, and I think this is the max.
+                                                                                                           a5 = -90
+
+/ Down
+cc dd ee ff 77 4f 00 00 e3 12 69 00 48 00 00 00 00 00 00 00 af 93 c6 3b 09 f7 4b 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fb ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+/ Up
+cc dd ee ff 77 4f 00 00 e3 12 69 00 48 00 00 00 00 00 00 00 af 93 c6 3b 09 f7 4b 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+
+Most left position is at 5 degrees
+Most right is at 355
