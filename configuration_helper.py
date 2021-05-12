@@ -1,3 +1,4 @@
+import os
 import threading
 from typing import List
 
@@ -10,7 +11,6 @@ from acoustic_surveillance_subsystem.processing.fast_fourier_transform import Fa
 from acoustic_surveillance_subsystem.processing.power_of_a_signal import PowerOfASignal
 from acoustic_surveillance_subsystem.recorder import Recorder
 from acoustic_surveillance_subsystem.signal import Signal
-from utils import FileWriter
 
 p = pyaudio.PyAudio()
 
@@ -21,7 +21,7 @@ devices: List[InputDevice] = []
 for i in range(p.get_device_count()):
     device = p.get_device_info_by_index(i)
     if microphone_name in device.get('name', ''):
-        devices.append(InputDevice(device=device, chunk_size=2048, channels=1))
+        devices.append(InputDevice(device=device, chunk_size=2048*10, channels=1))
 
 threads: List[threading.Thread] = []
 
@@ -35,29 +35,18 @@ recorder.add_device('3', m3)
 
 import time
 
-power_of_a_signal_in_plane = PlaneAudioDirection(0, 120, 240, PowerOfASignal)
-dynamic_range_in_plane = PlaneAudioDirection(0, 120, 240, DynamicRange)
-fast_fourier_transform_in_plane = PlaneAudioDirection(0, 120, 240, FastFourierTransform)
-
-angle = '150'
-distance = '2'
-wavelength = '2500'
-comment ='nowalls_maxgain'
-file_writer = FileWriter(f'benchmark_{angle}degrees_{distance}m_{wavelength}Hz_{comment}.txt')
-file_writer.write('n, poas, dr, fft')
-
 start_time = time.time()
-for i, a in enumerate(recorder.record(48)):
-    # If I connect them one by one, this is the correct order of microphones.
+for a in recorder.record():
     signals = (Signal.from_bytes(a['2']), Signal.from_bytes(a['3']), Signal.from_bytes(a['1']))
     signal1, signal2, signal3 = signals
 
-    poas = power_of_a_signal_in_plane.measure_angle(signal1, signal2, signal3)
-    dr = dynamic_range_in_plane.measure_angle(signal1, signal2, signal3)
-    fft = fast_fourier_transform_in_plane.measure_angle(signal1, signal2, signal3)
+    poas = (int(PowerOfASignal(signal1).measure()), int(PowerOfASignal(signal2).measure()), int(PowerOfASignal(signal3).measure()))
+    print(poas)
 
-    file_writer.write(f'{i}, {poas}, {dr}, {fft}')
-
-    print(f'{i}, {poas}, {dr}, {fft}')
+    # dr = (int(DynamicRange(signal1).measure()), int(DynamicRange(signal2).measure()), int(DynamicRange(signal3).measure()))
+    # fft = (int(FastFourierTransform(signal1).measure()), int(FastFourierTransform(signal2).measure()), int(FastFourierTransform(signal3).measure()))
+    #
+    # print('----------POAS----------------------DR------------------------FFT--------------')
+    # print(f'{poas}\t\t\t\t{dr}\t\t\t\t\t{fft}')
 
 print("--- %s seconds ---" % (time.time() - start_time))

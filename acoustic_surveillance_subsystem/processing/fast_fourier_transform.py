@@ -22,10 +22,12 @@ class FastFourierTransform(ProcessingBase):
         N = int(signal.length)
         T = 1 / N
 
-        # Everything divided by 2, because half the spectrum is a mirror.
-        x_axis = np.linspace(0.0, 1.0 / (2.0 * T), int(N / 2))
-        y_axis = 2.0 / N * np.abs(fft_[:N // 2])
+        # Only half a specter is relevant, therefore [:N // 2]
+        #   This means that every value in the remaining spectre has to be multiplied by two.
+        #   Source: https://www.sjsu.edu/people/burford.furman/docs/me120/FFT_tutorial_NI.pdf
+        y_axis = 2.0 / N * np.array(fft_absolute[:N // 2])
 
+        # x_axis = np.linspace(0.0, 1.0 / (2.0 * T), int(N / 2))
         # fig, ax = plt.subplots()
         # ax.plot(x_axis, y_axis)
         # plt.show()

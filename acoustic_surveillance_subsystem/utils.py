@@ -1,3 +1,4 @@
+import os
 import socket
 from typing import Tuple
 
@@ -45,3 +46,21 @@ def send_packet_and_close(ip: str, port: int, packet: bytes) -> None:
     s.connect((ip, port))
     s.send(packet)
     s.close()
+
+
+class FileWriter():
+    def __init__(self, filename: str, mode: str = 'a', force_new_file=True):
+        self.filename = filename
+        self.mode = mode
+
+        if force_new_file and os.path.exists(filename):
+            print('Old file removed.')
+            os.remove(filename)
+
+    def write(self, text: str, new_line: bool = True):
+        if new_line:
+            text = '\n' + text
+
+        f = open(self.filename, self.mode)
+        f.write(text)
+        f.close()

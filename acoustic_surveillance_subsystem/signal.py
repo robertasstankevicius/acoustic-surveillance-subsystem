@@ -18,6 +18,7 @@ class Signal:
     @classmethod
     def from_bytes(cls, b: bytes) -> 'Signal':
         length = int(len(b) / 2)
+        # pyaudio aInt16 and 'h' correspond.
         format_ = f'{length}h'
         signal = struct.unpack(format_, b)
 

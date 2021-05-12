@@ -1,4 +1,5 @@
 import time
+from typing import Callable
 
 import vlc
 
@@ -13,20 +14,22 @@ class Ipc365VideoDevice:
     TOP_MOST_ANGLE = 90
     BOTTOM_MOST_ANGLE = -23
 
-    MAX_TURN_PER_STEP = 180
+    MAX_TURN_PER_STEP = 180  # 180 is the max for this camera
 
-    def __init__(self):
+    def __init__(self, show_view: bool = True):
         self.current_horizontal_angle = 179  # pretty sure this is right, or it can be 178
         self.current_vertical_angle = 0
+        self.is_turning = False
 
-        player = vlc.MediaPlayer(full_address)
+        if show_view:
+            player = vlc.MediaPlayer(full_address)
 
-        # There is an issue, that at around 30 or 60 seconds of RTSP stream, the connection just closes for no reason.
-        # This is a temporary solution.
-        while True:
-            player.play()
-            time.sleep(20)
-            player.stop()
+            # There is an issue, that at around 30 or 60 seconds of RTSP stream, the connection just closes for no reason.
+            # This is a temporary solution.
+            while True:
+                player.play()
+                time.sleep(20)
+                player.stop()
 
     def turn_right(self, angle: int):
         next_angle = self.current_horizontal_angle + angle
@@ -96,23 +99,12 @@ class Ipc365VideoDevice:
 
         remaining_turn_angle = angle - self.current_horizontal_angle
 
-        first_iteration = True
-
         turn_function = self.turn_right
         if remaining_turn_angle < 0:
             turn_function = self.turn_left
             remaining_turn_angle = -remaining_turn_angle
 
-        while remaining_turn_angle > 0:
-            print(remaining_turn_angle)
-            if first_iteration:
-                first_iteration = False
-            else:
-                time.sleep(2)
-            next_turn = remaining_turn_angle if remaining_turn_angle > self.MAX_TURN_PER_STEP else remaining_turn_angle
-            remaining_turn_angle -= next_turn
-            turn_function(next_turn)
-            # TODO: debug, because there are still some random exceptions...
+        self.__turn(remaining_turn_angle, turn_function)
 
     def turn_to_vertical_angle(self, angle: int) -> None:
         if angle > self.TOP_MOST_ANGLE:
@@ -122,25 +114,29 @@ class Ipc365VideoDevice:
 
         remaining_turn_angle = angle - self.current_vertical_angle
 
+        turn_function = self.turn_up
+        if remaining_turn_angle < 0:
+            turn_function = self.turn_down
+            remaining_turn_angle = -remaining_turn_angle
+
+        self.__turn(remaining_turn_angle, turn_function)
+
+    def __turn(self, remaining_turn_angle: int, turn_function: Callable[[int], None]):
+        self.is_turning = True
+
         first_iteration = True
 
         while remaining_turn_angle > 0:
+            print(remaining_turn_angle)
             if first_iteration:
                 first_iteration = False
-            else:
-                time.sleep(2)
-            next_turn = remaining_turn_angle if remaining_turn_angle > self.MAX_TURN_PER_STEP else remaining_turn_angle
+            next_turn = remaining_turn_angle if remaining_turn_angle <= self.MAX_TURN_PER_STEP else self.MAX_TURN_PER_STEP
             remaining_turn_angle -= next_turn
-            self.turn_up(next_turn)
+            turn_function(next_turn)
 
-        while remaining_turn_angle < 0:
-            if first_iteration:
-                first_iteration = False
-            else:
-                time.sleep(2)
-            next_turn = remaining_turn_angle if remaining_turn_angle < self.MAX_TURN_PER_STEP else remaining_turn_angle
-            remaining_turn_angle += next_turn
-            self.turn_down(-next_turn)
+            time.sleep(3)
+
+        self.is_turning = False
 
     def __validate_horizontal_angles(self, angle: int) -> None:
         next_angle = self.current_horizontal_angle + angle

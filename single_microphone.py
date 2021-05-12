@@ -30,22 +30,36 @@ recorder = Recorder()
 
 recorder.add_device('1', main_device)
 
-for a in recorder.record():
+plt.axis()
+
+linewidth = 0.5
+samples_elapsed = 0
+i_list = []
+poas_list = []
+dr_list = []
+fft_list = []
+for i, a in enumerate(recorder.record(.25)):
     signal = Signal.from_bytes(a['1'])
 
-    print(
-        PowerOfASignal(signal).measure(),
-        DynamicRange(signal).measure(),
-        FastFourierTransform(signal).measure()
-    )
+    poas = PowerOfASignal(signal).measure()
+    dr = DynamicRange(signal).measure()
+    fft = FastFourierTransform(signal).measure()
 
-    # plt.axis([PowerOfASignal(signal).measure(),
-    #           DynamicRange(signal).measure(),
-    #           FastFourierTransform(signal).measure()])
+    i_list.append(i)
+    poas_list.append(poas)
+    dr_list.append(dr)
+    fft_list.append(fft)
 
-#     for i in range(10):
-#         y = np.random.random()
-#         plt.scatter(i, y)
-#         plt.pause(0.05)
-#     plt.show()
+    print(poas, dr, fft)
+
+    # plt.plot(list(range(samples_elapsed, samples_elapsed + signal.length)), signal.samples, color='blue', linewidth=linewidth)
+    # samples_elapsed += signal.length
+
+plt.scatter(i_list, poas_list, c='blue', marker='o', label='Power of a Signal')
+plt.scatter(i_list, dr_list, c='brown', marker='v', label='Dynamic Range')
+plt.scatter(i_list, fft_list, c='red', marker='x', label='Fast Fourier Transform')
+plt.legend()
+
+plt.show()
+# plt.pause(0.1)
 # plt.axis([0, 10, 0, 1])
