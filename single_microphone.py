@@ -5,7 +5,7 @@ from typing import List, Optional
 import pyaudio
 
 from acoustic_surveillance_subsystem.device.input_device import InputDevice
-from acoustic_surveillance_subsystem.plane_virtualisation import PlaneAudioDirection
+from acoustic_surveillance_subsystem.plane_audio_direction import PlaneAudioDirection
 from acoustic_surveillance_subsystem.processing.dynamic_range import DynamicRange
 from acoustic_surveillance_subsystem.processing.fast_fourier_transform import FastFourierTransform
 from acoustic_surveillance_subsystem.processing.power_of_a_signal import PowerOfASignal

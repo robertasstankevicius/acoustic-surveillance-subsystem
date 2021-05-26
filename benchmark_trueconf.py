@@ -4,7 +4,6 @@ from typing import List
 import pyaudio
 
 from acoustic_surveillance_subsystem.device.input_device import InputDevice
-from acoustic_surveillance_subsystem.plane_audio_direction import PlaneAudioDirection
 from acoustic_surveillance_subsystem.processing.dynamic_range import DynamicRange
 from acoustic_surveillance_subsystem.processing.fast_fourier_transform import FastFourierTransform
 from acoustic_surveillance_subsystem.processing.power_of_a_signal import PowerOfASignal
@@ -40,24 +39,15 @@ angle1 = 135
 angle2 = 180
 angle3 = 225
 
-power_of_a_signal_in_plane = PlaneAudioDirection(angle1, angle2, angle3, PowerOfASignal)
-dynamic_range_in_plane = PlaneAudioDirection(angle1, angle2, angle3, DynamicRange)
-fast_fourier_transform_in_plane = PlaneAudioDirection(angle1, angle2, angle3, FastFourierTransform)
+power_of_a_signal_in_plane = TrueConfTrackerAnalog(angle1, angle2, angle3, PowerOfASignal)
+dynamic_range_in_plane = TrueConfTrackerAnalog(angle1, angle2, angle3, DynamicRange)
+fast_fourier_transform_in_plane = TrueConfTrackerAnalog(angle1, angle2, angle3, FastFourierTransform)
 
-power_of_a_signal_in_plane_tc = TrueConfTrackerAnalog(angle1, angle2, angle3, PowerOfASignal)
-dynamic_range_in_plane_tc = TrueConfTrackerAnalog(angle1, angle2, angle3, DynamicRange)
-fast_fourier_transform_in_plane_tc = TrueConfTrackerAnalog(angle1, angle2, angle3, FastFourierTransform)
-
-
-angle = '145'
-distance = '2'
-wavelength = '2500'
-comment ='135-180-225'
+from benchmark import angle, distance, wavelength
+comment ='135-180-225_trueconf'
 
 file_writer = FileWriter(f'benchmark_{angle}degrees_{distance}m_{wavelength}Hz_{comment}.txt')
-file_writer_tc = FileWriter(f'benchmark_{angle}degrees_{distance}m_{wavelength}Hz_{comment}_trueconf.txt')
 file_writer.write('n, poas, dr, fft', new_line=False)
-file_writer_tc.write('n, poas, dr, fft', new_line=False)
 
 start_time = time.time()
 for i, a in enumerate(recorder.record(48)):
@@ -69,14 +59,8 @@ for i, a in enumerate(recorder.record(48)):
     dr = dynamic_range_in_plane.measure_angle(signal1, signal2, signal3)
     fft = fast_fourier_transform_in_plane.measure_angle(signal1, signal2, signal3)
 
-    poas_tc = power_of_a_signal_in_plane_tc.measure_angle(signal1, signal2, signal3)
-    dr_tc = dynamic_range_in_plane_tc.measure_angle(signal1, signal2, signal3)
-    fft_tc = fast_fourier_transform_in_plane_tc.measure_angle(signal1, signal2, signal3)
-
-    file_writer.write(f'{i},{poas},{dr},{fft}')
-    file_writer_tc.write(f'{i},{poas_tc},{dr_tc},{fft_tc}')
+    file_writer.write(f'{i}, {poas}, {dr}, {fft}')
 
     print(f'{i}, {poas}, {dr}, {fft}')
-    print(f'{i}, {poas_tc}, {dr_tc}, {fft_tc}')
 
 print("--- %s seconds ---" % (time.time() - start_time))

@@ -2,13 +2,15 @@ from typing import Optional, Type
 
 from acoustic_surveillance_subsystem.processing.processing_base import ProcessingBase
 from acoustic_surveillance_subsystem.signal import Signal
-from acoustic_surveillance_subsystem.utils import normalize_sequence, calculate_degrees_between_angle
 
 
-class PlaneAudioDirection:
+class TrueConfTrackerAnalog:
     """
     Class dedicated to processing audio signals and measuring the direction
     that the audio is coming from in a plane.
+
+    It is a copy of TrueConf Tracker technology. This is purely for methodology comparison.
+    Source: https://trueconf.com/products/tracker.html
     """
 
     def __init__(self, angle1: float, angle2: float, angle3: float, processor: Type[ProcessingBase]):
@@ -26,8 +28,8 @@ class PlaneAudioDirection:
 
     def measure_angle(self, signal1: Signal, signal2: Signal, signal3: Signal) -> Optional[float]:
         """
-        Calculates at which angle the audio is coming from using Power of a Signal method which relies on measuring
-        root mean square of each signal.
+        Calculates at which angle the audio is coming from using the provided audio processor.
+
 
         :param signal1: Signal wave.
         :param signal2: Signal wave.
@@ -36,25 +38,18 @@ class PlaneAudioDirection:
         :return: Angle at which the audio came from if it can be measured, otherwise return None.
         """
 
-        normalized1, normalized2, normalized3 = normalize_sequence(
-            (
-                self.__processor(signal1).measure(),
-                self.__processor(signal2).measure(),
-                self.__processor(signal3).measure()
-            )
-        )
+        loudness1 = self.__processor(signal1).measure()
+        loudness2 = self.__processor(signal2).measure()
+        loudness3 = self.__processor(signal3).measure()
 
-        if normalized1 == 0:
-            available_angle = self.__angle3 - self.__angle2
-            return self.__angle2 + calculate_degrees_between_angle(normalized2, normalized3, available_angle)
+        if loudness1 > loudness2 and loudness1 > loudness3:
+            return self.__angle1
 
-        elif normalized2 == 0:
-            available_angle = 360 - self.__angle3 + self.__angle1
-            return (self.__angle3 + calculate_degrees_between_angle(normalized3, normalized1, available_angle)) % 360
+        if loudness2 > loudness1 and loudness2 > loudness3:
+            return self.__angle2
 
-        elif normalized3 == 0:
-            available_angle = self.__angle2 - self.__angle1
-            return self.__angle1 + calculate_degrees_between_angle(normalized1, normalized2, available_angle)
+        if loudness3 > loudness2 and loudness3 > loudness1:
+            return self.__angle3
 
-        elif normalized1 == normalized2 == normalized3:
+        elif loudness1 == loudness2 == loudness3:
             return None

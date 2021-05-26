@@ -5,7 +5,7 @@ from typing import List
 import pyaudio
 
 from acoustic_surveillance_subsystem.device.input_device import InputDevice
-from acoustic_surveillance_subsystem.plane_virtualisation import PlaneAudioDirection
+from acoustic_surveillance_subsystem.plane_audio_direction import PlaneAudioDirection
 from acoustic_surveillance_subsystem.processing.dynamic_range import DynamicRange
 from acoustic_surveillance_subsystem.processing.fast_fourier_transform import FastFourierTransform
 from acoustic_surveillance_subsystem.processing.power_of_a_signal import PowerOfASignal
@@ -37,7 +37,7 @@ import time
 
 start_time = time.time()
 for a in recorder.record():
-    signals = (Signal.from_bytes(a['2']), Signal.from_bytes(a['3']), Signal.from_bytes(a['1']))
+    signals = (Signal.from_bytes(a['1']), Signal.from_bytes(a['2']), Signal.from_bytes(a['3']))
     signal1, signal2, signal3 = signals
 
     poas = (int(PowerOfASignal(signal1).measure()), int(PowerOfASignal(signal2).measure()), int(PowerOfASignal(signal3).measure()))

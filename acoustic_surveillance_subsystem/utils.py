@@ -49,13 +49,17 @@ def send_packet_and_close(ip: str, port: int, packet: bytes) -> None:
 
 
 class FileWriter():
-    def __init__(self, filename: str, mode: str = 'a', force_new_file=True):
+    def __init__(self, filename: str, mode: str = 'a', force_new_file=False):
         self.filename = filename
         self.mode = mode
 
-        if force_new_file and os.path.exists(filename):
-            print('Old file removed.')
-            os.remove(filename)
+        if os.path.exists(filename):
+            remove = force_new_file
+            if not force_new_file:
+                remove = bool(input(f'Delete file {filename}?'))
+            if remove:
+                print('Old file removed.')
+                os.remove(filename)
 
     def write(self, text: str, new_line: bool = True):
         if new_line:
