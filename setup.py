@@ -20,5 +20,12 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires="3.6",
+    python_requires=">=3.6, <3.7",
+    install_requires=[
+        'PyAudio>=0.2.11,<1.0.0',
+        'numpy>=1.19.5,<2.0.0',
+        'python-vlc>=3.0.12117,<4.0.0',
+        'scipy>=1.5.4,<2.0.0',
+        'rtsp>=1.1.8,<2.0.0',
+    ]
 )
