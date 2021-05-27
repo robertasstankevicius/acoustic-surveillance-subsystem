@@ -69,14 +69,8 @@ for i, a in enumerate(recorder.record(48)):
     dr = dynamic_range_in_plane.measure_angle(signal1, signal2, signal3)
     fft = fast_fourier_transform_in_plane.measure_angle(signal1, signal2, signal3)
 
-    poas_tc = power_of_a_signal_in_plane_tc.measure_angle(signal1, signal2, signal3)
-    dr_tc = dynamic_range_in_plane_tc.measure_angle(signal1, signal2, signal3)
-    fft_tc = fast_fourier_transform_in_plane_tc.measure_angle(signal1, signal2, signal3)
-
     file_writer.write(f'{i},{poas},{dr},{fft}')
-    file_writer_tc.write(f'{i},{poas_tc},{dr_tc},{fft_tc}')
 
     print(f'{i}, {poas}, {dr}, {fft}')
-    print(f'{i}, {poas_tc}, {dr_tc}, {fft_tc}')
 
 print("--- %s seconds ---" % (time.time() - start_time))

@@ -43,7 +43,9 @@ power_of_a_signal_in_plane = TrueConfTrackerAnalog(angle1, angle2, angle3, Power
 dynamic_range_in_plane = TrueConfTrackerAnalog(angle1, angle2, angle3, DynamicRange)
 fast_fourier_transform_in_plane = TrueConfTrackerAnalog(angle1, angle2, angle3, FastFourierTransform)
 
-from benchmark import angle, distance, wavelength
+angle = '145'
+distance = '2'
+wavelength = '2500'
 comment ='135-180-225_trueconf'
 
 file_writer = FileWriter(f'benchmark_{angle}degrees_{distance}m_{wavelength}Hz_{comment}.txt')
